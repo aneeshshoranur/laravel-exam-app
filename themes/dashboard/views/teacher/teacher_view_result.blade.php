@@ -69,6 +69,14 @@
                                 <td>Total : </td>
                                 <td>{{ $result_info->yes_ans+$result_info->no_ans}}</td>
                             </tr>
+                            <tr>
+                                <td>Result : </td>                                
+                                @if($result_info->yes_ans >= $exam_info->pass_mark)
+                                <td><span class="badge badge-success">Passed</span></td>
+                                @else
+                                <td><span class="badge badge-danger">Failed</span></td>
+                                @endif
+                            </tr>
                         </table>
                     </div>
                     <!-- /.card-body -->

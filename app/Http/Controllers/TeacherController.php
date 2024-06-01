@@ -134,7 +134,7 @@ class TeacherController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required', 'exam_date' => 'required', 'exam_category' => 'required',
-            'exam_duration' => 'required'
+            'exam_duration' => 'required', 'pass_mark' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -147,6 +147,7 @@ class TeacherController extends Controller
             $exam->exam_duration = $request->exam_duration;
             $exam->category = $request->exam_category;
             $exam->status = 1;
+            $exam->pass_mark = $request->pass_mark;
             $exam->save();
 
             $arr = array('status' => 'true', 'message' => 'exam added successfully', 'reload' => url('teacher/manage_exam'));
@@ -208,6 +209,7 @@ class TeacherController extends Controller
         $exam->exam_date = $request->exam_date;
         $exam->category = $request->exam_category;
         $exam->exam_duration = $request->exam_duration;
+        $exam->pass_mark = $request->pass_mark;
 
         $exam->update();
 
@@ -302,7 +304,6 @@ class TeacherController extends Controller
      */
     public function edit_students_final(Request $request)
     {
-
         $std = User::where('id', $request->id)->get()->first();
         $std->name = $request->name;
         $std->email = $request->email;

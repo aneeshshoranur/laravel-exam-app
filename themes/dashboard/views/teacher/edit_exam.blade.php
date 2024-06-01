@@ -63,6 +63,12 @@
                                 </div>
                             </div>
                             <div class="col-sm-12">
+                              <div class="form-group">
+                                  <label for="">Enter pass mark (Each question has 1 mark)</label>
+                                  <input type="text" required="required" name="pass_mark" value="{{ $exam->pass_mark}}"  class="form-control">
+                              </div>
+                            </div>
+                            <div class="col-sm-12">
                                 <div class="form-group">
                                     <button class="btn btn-primary">Update</button>
                                 </div>
