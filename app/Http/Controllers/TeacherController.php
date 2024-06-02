@@ -23,13 +23,11 @@ class TeacherController extends Controller
      */
     public function index()
     {
-
         $user_count = User::get()->count();
         $exam_count = Exam::get()->count();
         $teacher_count = Teacher::get()->count();
         return view('teacher.dashboard', ['student' => $user_count, 'exam' => $exam_count, 'teacher' => $teacher_count]);
     }
-
 
     /**
      * Method to Show Exam categories
@@ -41,13 +39,11 @@ class TeacherController extends Controller
         return view('teacher.exam_category', $data);
     }
 
-
     /**
      * Method to Add new exam categories
      */
     public function add_new_category(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'name' => 'required',
         ]);
@@ -75,7 +71,6 @@ class TeacherController extends Controller
         return redirect(url('teacher/exam_category'));
     }
 
-
     /**
      * Method to edit category
      */
@@ -84,7 +79,6 @@ class TeacherController extends Controller
         $category = Category::where('id', $id)->get()->first();
         return view('teacher.edit_category', ['category' => $category]);
     }
-
 
     /**
      * Method to update category
@@ -96,7 +90,6 @@ class TeacherController extends Controller
         $cat->update();
         echo json_encode(array('status' => 'true', 'message' => 'updated successfully', 'reload' => url('teacher/exam_category')));
     }
-
 
     /**
      * Method to change category status
@@ -115,7 +108,6 @@ class TeacherController extends Controller
         $cat1->update();
     }
 
-
     /**
      * Method to list exams   
      */
@@ -125,7 +117,6 @@ class TeacherController extends Controller
         $data['exams'] = Exam::select(['exams.*', 'categories.name as cat_name'])->join('categories', 'exams.category', '=', 'categories.id')->get()->toArray();
         return view('teacher.manage_exam', $data);
     }
-
 
     /**
      * Method to add new exam
@@ -140,7 +131,6 @@ class TeacherController extends Controller
         if ($validator->fails()) {
             $arr = array('status' => 'false', 'message' => $validator->errors()->all());
         } else {
-
             $exam = new Exam();
             $exam->title = $request->title;
             $exam->exam_date = $request->exam_date;
@@ -156,13 +146,11 @@ class TeacherController extends Controller
         echo json_encode($arr);
     }
 
-
     /**
      * Method to update exam status
      */
     public function exam_status($id)
     {
-
         $exam = Exam::where('id', $id)->get()->first();
 
         if ($exam->status == 1) {
@@ -173,9 +161,8 @@ class TeacherController extends Controller
             $message = 'Exam Succesfully activated.';
         }
 
-        $exam1 = Exam::where('id', $id)->get()->first();
-        $exam1->status = $status;
-        $exam1->update();
+        $exam->status = $status;
+        $exam->update();
         $arr = array('status' => 'true', 'message' => $message, 'reload' => url('teacher/manage_exam'));
         echo json_encode($arr);
     }
@@ -185,11 +172,10 @@ class TeacherController extends Controller
      */
     public function delete_exam($id)
     {
-        $exam1 = Exam::where('id', $id)->get()->first();
-        $exam1->delete();
+        $exam = Exam::where('id', $id)->get()->first();
+        $exam->delete();
         return redirect(url('teacher/manage_exam'));
     }
-
 
     /**
      * Method to edit exam details
@@ -202,13 +188,11 @@ class TeacherController extends Controller
         return view('teacher.edit_exam', $data);
     }
 
-
     /**
      * Method to update exam details
      */
     public function edit_exam_sub(Request $request)
     {
-
         $exam = Exam::where('id', $request->id)->get()->first();
         $exam->title = $request->title;
         $exam->exam_date = $request->exam_date;
@@ -221,13 +205,11 @@ class TeacherController extends Controller
         echo json_encode(array('status' => 'true', 'message' => 'Successfully updated', 'reload' => url('teacher/manage_exam')));
     }
 
-
     /**
      * Method to show students
      */
     public function manage_students()
     {
-
         $data['exams'] = Exam::where('status', '1')->get()->toArray();
         $data['students'] = UserExam::select(['user_exams.*', 'users.name', 'exams.title as ex_name', 'exams.exam_date'])
             ->join('users', 'users.id', '=', 'user_exams.user_id')
@@ -237,13 +219,11 @@ class TeacherController extends Controller
         return view('teacher.manage_students', $data);
     }
 
-
     /**
      * Method to add new student
      */
     public function add_new_students(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required',
@@ -256,16 +236,14 @@ class TeacherController extends Controller
         if ($validator->fails()) {
             $arr = array('status' => 'false', 'message' => $validator->errors()->all());
         } else {
-            $std = new User();
-            $std->name = $request->name;
-            $std->email = $request->email;
-            $std->mobile_no = $request->mobile_no;
-            $std->exam = $request->exam;
-            $std->password = Hash::make($request->password);
-
-            $std->status = 1;
-
-            $std->save();
+            $student = new User();
+            $student->name = $request->name;
+            $student->email = $request->email;
+            $student->mobile_no = $request->mobile_no;
+            $student->exam = $request->exam;
+            $student->password = Hash::make($request->password);
+            $student->status = 1;
+            $student->save();
 
             $arr = array('status' => 'true', 'message' => 'student added successfully', 'reload' => url('teacher/manage_students'));
         }
@@ -273,54 +251,48 @@ class TeacherController extends Controller
         echo json_encode($arr);
     }
 
-
     /**
      * Method to update student status
      */
     public function student_status($id)
     {
-        $std = UserExam::where('id', $id)->get()->first();
+        $student = UserExam::where('id', $id)->get()->first();
 
-        if ($std->std_status == 1)
+        if ($student->std_status == 1)
             $status = 0;
         else
             $status = 1;
 
-        $std1 = UserExam::where('id', $id)->get()->first();
-        $std1->std_status = $status;
-        $std1->update();
+        $student->std_status = $status;
+        $student->update();
     }
-
 
     /**
      * Method to delete student
      */
     public function delete_students($id)
     {
-
-        $std = UserExam::where('id', $id)->get()->first();
-        $std->delete();
+        $student = UserExam::where('id', $id)->get()->first();
+        $student->delete();
         return redirect('teacher/manage_students');
     }
-
 
     /**
      * Method to edit student details
      */
     public function edit_students_final(Request $request)
     {
-        $std = User::where('id', $request->id)->get()->first();
-        $std->name = $request->name;
-        $std->email = $request->email;
-        $std->mobile_no = $request->mobile_no;
-        $std->exam = $request->exam;
+        $student = User::where('id', $request->id)->get()->first();
+        $student->name = $request->name;
+        $student->email = $request->email;
+        $student->mobile_no = $request->mobile_no;
+        $student->exam = $request->exam;
         if ($request->password != '')
-            $std->password = $request->password;
+            $student->password = $request->password;
 
-        $std->update();
+        $student->update();
         echo json_encode(array('status' => 'true', 'message' => 'Successfully updated', 'reload' => url('teacher/manage_students')));
     }
-
 
     /**
      * Method to list registered student
@@ -332,14 +304,13 @@ class TeacherController extends Controller
         return view('teacher.registered_students', $data);
     }
 
-
     /**
      * Method to delete a registered student
      */
     public function delete_registered_students($id)
     {
-        $std = User::where('id', $id)->get()->first();
-        $std->delete();
+        $student = User::where('id', $id)->get()->first();
+        $student->delete();
         return redirect('teacher/registered_students');
     }
 
@@ -351,7 +322,6 @@ class TeacherController extends Controller
         $data['questions'] = Question::where('exam_id', $id)->get()->toArray();
         return view('teacher.add_questions', $data);
     }
-
 
     /**
      * Method to save a new question
@@ -371,23 +341,23 @@ class TeacherController extends Controller
             $arr = array('status' => 'flase', 'message' => $validator->errors()->all());
         } else {
 
-            $q = new Question();
-            $q->exam_id = $request->exam_id;
-            $q->questions = $request->question;
+            $question = new Question();
+            $question->exam_id = $request->exam_id;
+            $question->questions = $request->question;
 
             if ($request->ans == 'option_1') {
-                $q->ans = $request->option_1;
+                $question->ans = $request->option_1;
             } elseif ($request->ans == 'option_2') {
-                $q->ans = $request->option_2;
+                $question->ans = $request->option_2;
             } elseif ($request->ans == 'option_3') {
-                $q->ans = $request->option_3;
+                $question->ans = $request->option_3;
             } else {
-                $q->ans = $request->option_4;
+                $question->ans = $request->option_4;
             }
 
-            $q->status = 1;
-            $q->options = json_encode(array('option1' => $request->option_1, 'option2' => $request->option_2, 'option3' => $request->option_3, 'option4' => $request->option_4));
-            $q->save();
+            $question->status = 1;
+            $question->options = json_encode(array('option1' => $request->option_1, 'option2' => $request->option_2, 'option3' => $request->option_3, 'option4' => $request->option_4));
+            $question->save();
 
             $arr = array('status' => 'true', 'message' => 'successfully added', 'reload' => url('teacher/add_questions/' . $request->exam_id));
         }
@@ -412,15 +382,14 @@ class TeacherController extends Controller
         $p1->update();
     }
 
-
     /**
      * Method to delete question
      */
     public function delete_question($id)
     {
-        $q = Question::where('id', $id)->get()->first();
-        $exam_id = $q->exam_id;
-        $q->delete();
+        $question = Question::where('id', $id)->get()->first();
+        $exam_id = $question->exam_id;
+        $question->delete();
 
         return redirect(url('teacher/add_questions/' . $exam_id));
     }
@@ -430,12 +399,10 @@ class TeacherController extends Controller
      */
     public function update_question($id)
     {
-
         $data['q'] = Question::where('id', $id)->get()->toArray();
 
         return view('teacher.update_question', $data);
     }
-
 
     /**
      * Method to update question details
@@ -443,40 +410,37 @@ class TeacherController extends Controller
     public function edit_question_inner(Request $request)
     {
 
-        $q = Question::where('id', $request->id)->get()->first();
+        $question = Question::where('id', $request->id)->get()->first();
 
-        $q->questions = $request->question;
+        $question->questions = $request->question;
 
         if ($request->ans == 'option_1') {
-            $q->ans = $request->option_1;
+            $question->ans = $request->option_1;
         } elseif ($request->ans == 'option_2') {
-            $q->ans = $request->option_2;
+            $question->ans = $request->option_2;
         } elseif ($request->ans == 'option_3') {
-            $q->ans = $request->option_3;
+            $question->ans = $request->option_3;
         } else {
-            $q->ans = $request->option_4;
+            $question->ans = $request->option_4;
         }
 
-        $q->options = json_encode(array('option1' => $request->option_1, 'option2' => $request->option_2, 'option3' => $request->option_3, 'option4' => $request->option_4));
+        $question->options = json_encode(array('option1' => $request->option_1, 'option2' => $request->option_2, 'option3' => $request->option_3, 'option4' => $request->option_4));
 
-        $q->update();
+        $question->update();
 
-        echo json_encode(array('status' => 'true', 'message' => 'successfully updated', 'reload' => url('teacher/add_questions/' . $q->exam_id)));
+        echo json_encode(array('status' => 'true', 'message' => 'successfully updated', 'reload' => url('teacher/add_questions/' . $question->exam_id)));
     }
-
 
     /**
      * Method to show result of a student
      */
     public function teacher_view_result($id)
     {
-        $std_exam = UserExam::where('id', $id)->get()->first();
+        $studentExam = UserExam::where('id', $id)->get()->first();
 
-        $data['student_info'] = User::where('id', $std_exam->user_id)->get()->first();
-
-        $data['exam_info'] = Exam::where('id', $std_exam->exam_id)->get()->first();
-
-        $data['result_info'] = Result::where('exam_id', $std_exam->exam_id)->where('user_id', $std_exam->user_id)->get()->first();
+        $data['student_info'] = User::where('id', $studentExam->user_id)->get()->first();
+        $data['exam_info'] = Exam::where('id', $studentExam->exam_id)->get()->first();
+        $data['result_info'] = Result::where('exam_id', $studentExam->exam_id)->where('user_id', $studentExam->user_id)->get()->first();
 
         return view('teacher.teacher_view_result', $data);
     }

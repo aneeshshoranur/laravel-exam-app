@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use App\Models\Student;
 use App\Models\Exam;
 use App\Models\Question;
 use App\Models\Result;
@@ -24,20 +23,20 @@ class StudentOperation extends Controller
         return view('student.dashboard', $data);
     }
 
-
     /**
      * Method to show Exam Page.
      * */
     public function exam()
     {
-        $student_info = UserExam::select(['user_exams.*', 'users.name', 'exams.title', 'exams.exam_date'])
+        $studentInfo = UserExam::select(['user_exams.*', 'users.name', 'exams.title', 'exams.exam_date'])
             ->join('users', 'users.id', '=', 'user_exams.user_id')
             ->join('exams', 'user_exams.exam_id', '=', 'exams.id')->orderBy('user_exams.exam_id', 'desc')
             ->where('user_exams.user_id', Session::get('id'))
             ->where('user_exams.std_status', '1')
+            ->where('exams.status', '1')
             ->get()->toArray();
 
-        return view('student.exam', ['student_info' => $student_info]);
+        return view('student.exam', ['student_info' => $studentInfo]);
     }
 
     /**
@@ -50,14 +49,11 @@ class StudentOperation extends Controller
         return view('student.join_exam', ['question' => $question, 'exam' => $exam]);
     }
 
-
-
     /**
      * Method to submit Questions
      */
     public function submit_questions(Request $request)
     {
-
         $yesAns = 0;
         $noAns = 0;
         $data = $request->all();
@@ -76,10 +72,9 @@ class StudentOperation extends Controller
             }
         }
 
-        $std_info = UserExam::where('user_id', Session::get('id'))->where('exam_id', $request->exam_id)->get()->first();
-        $std_info->exam_joined = 1;
-        $std_info->update();
-
+        $studentInfo = UserExam::where('user_id', Session::get('id'))->where('exam_id', $request->exam_id)->get()->first();
+        $studentInfo->exam_joined = 1;
+        $studentInfo->update();
 
         $res = new Result();
         $res->exam_id = $request->exam_id;
@@ -92,8 +87,6 @@ class StudentOperation extends Controller
         return redirect(url('student/exam'));
     }
 
-
-
     /**
      * Method to apply the exam.
      */
@@ -105,20 +98,19 @@ class StudentOperation extends Controller
         if ($checkuser) {
             $arr = array('status' => 'false', 'message' => 'Already applied, see your exam section');
         } else {
-            $exam_user = new UserExam();
-            $exam_user->user_id = Session::get('id');
-            $exam_user->exam_id = $id;
-            $exam_user->std_status = 1;
-            $exam_user->exam_joined = 0;
+            $examUser = new UserExam();
+            $examUser->user_id = Session::get('id');
+            $examUser->exam_id = $id;
+            $examUser->std_status = 1;
+            $examUser->exam_joined = 0;
 
-            $exam_user->save();
+            $examUser->save();
 
             $arr = array('status' => 'true', 'message' => 'applied successfully', 'reload' => url('student/dashboard'));
         }
 
         echo json_encode($arr);
     }
-
 
     /**
      * Method to show results to student
@@ -132,7 +124,6 @@ class StudentOperation extends Controller
         $data['exam_info'] = Exam::where('id', $id)->get()->first();
         return view('student.view_result', $data);
     }
-
 
     /**
      * Method to show answers
