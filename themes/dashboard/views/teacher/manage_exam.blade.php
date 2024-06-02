@@ -53,7 +53,13 @@
                                    <td>{{ $exam['title']}}</td>
                                    <td>{{ $exam['cat_name']}}</td>
                                    <td>{{ $exam['exam_date']}}</td>
-                                   <td><input type="checkbox" class="exam_status" data-id="{{ $exam['id']}}" <?php if($exam['status']==1){ echo "checked";} ?> name="status"></td>
+                                   <td>
+                                   @if($exam['status']==1) 
+                                   <button class="btn btn-success exam_status" title="Click here Archive" type="button" data-id="{{ $exam['id']}}">Active</button>
+                                   @else
+                                   <button class="btn btn-danger exam_status" title="Click here Activate" type="button" data-id="{{ $exam['id']}}">Archived</button>
+                                   @endif
+                                   </td>
                                    <td>
                                        <a href="{{ url('teacher/edit_exam/'.$exam['id'])}}" class="btn btn-info">Edit</a>
                                        <a href="{{ url('teacher/delete_exam/'.$exam['id'])}}" class="btn btn-danger">Delete</a>

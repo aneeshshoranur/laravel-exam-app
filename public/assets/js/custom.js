@@ -41,9 +41,15 @@ $(document).on('click','.category_status',function(){
 
 
 $(document).on('click','.exam_status',function(){
-    var id=$(this).attr('data-id');
+    var id = $(this).attr('data-id');
     $.get(BASE_URL+'/teacher/exam_status/'+id,function(fb){
-        alert("status successsfully changed");
+        var resp=$.parseJSON(fb);
+        if(resp.status=='true'){
+            alert(resp.message);
+            window.location.href = resp.reload;            
+        } else {
+            alert(resp.message);
+        }
     })
 })
 

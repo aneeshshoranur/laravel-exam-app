@@ -165,14 +165,19 @@ class TeacherController extends Controller
 
         $exam = Exam::where('id', $id)->get()->first();
 
-        if ($exam->status == 1)
+        if ($exam->status == 1) {
             $status = 0;
-        else
+            $message = 'Exam Succesfully archived.';
+        } else {
             $status = 1;
+            $message = 'Exam Succesfully activated.';
+        }
 
         $exam1 = Exam::where('id', $id)->get()->first();
         $exam1->status = $status;
         $exam1->update();
+        $arr = array('status' => 'true', 'message' => $message, 'reload' => url('teacher/manage_exam'));
+        echo json_encode($arr);
     }
 
     /**
